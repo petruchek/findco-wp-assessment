@@ -1,0 +1,92 @@
+# Copyright (C) 2024 Val Petruchek
+# This file is distributed under the same license as the Helpful Article plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Helpful Article 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/source\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-03-21T15:58:16+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: helpful-article\n"
+
+#. Plugin Name of the plugin
+#: helpful-article.php
+msgid "Helpful Article"
+msgstr "Корисна Стаття"
+
+#. Plugin URI of the plugin
+#: helpful-article.php
+msgid "https://github.com/petruchek/findco-wp-assessment"
+msgstr "https://github.com/petruchek/findco-wp-assessment"
+
+#. Description of the plugin
+#: helpful-article.php
+msgid "OOP WordPress plugin that allows website visitors to vote on various articles."
+msgstr "Об'єктно-орієнтований WordPress плагін, який дозволяє відвідувачам веб-сайту голосувати за різноманітні статті."
+
+#. Author of the plugin
+#: helpful-article.php
+msgid "Val Petruchek"
+msgstr "Валентин Петручек"
+
+#. Author URI of the plugin
+#: helpful-article.php
+msgid "https://linkedin.com/in/petruchek"
+msgstr "https://linkedin.com/in/petruchek"
+
+#: helpful-article.php:67
+msgid "Was this article helpful?"
+msgstr "Чи була ця стаття корисною?"
+
+#: helpful-article.php:69
+msgid "Yes"
+msgstr "Так"
+
+#: helpful-article.php:70
+msgid "No"
+msgstr "Ні"
+
+#: helpful-article.php:96
+msgid "Invalid parameters"
+msgstr "Недійсні параметри"
+
+#: helpful-article.php:99
+msgid "Invalid vote"
+msgstr "Недійсний голос"
+
+#: helpful-article.php:104
+msgid "You have already voted."
+msgstr "Ви вже голосували."
+
+#: helpful-article.php:113
+msgid "Thank you for your vote."
+msgstr "Дякуємо за ваш голос."
+
+#: helpful-article.php:189
+msgid "No votes so far."
+msgstr "Поки що не було голосів."
+
+#: helpful-article.php:192
+msgid "Total votes:"
+msgstr "Голосів загалом:"
+
+#: helpful-article.php:194
+msgid "Positive votes:"
+msgstr "Голосів «ЗА»:"
+
+#: helpful-article.php:196
+msgid "Negative votes:"
+msgstr "Голосів «ПРОТИ»:"
+
+#: helpful-article.php:198
+msgid "Approval rate:"
+msgstr "Рейтинг підтримки:"
+
+#: helpful-article.php:200
+msgid "Disapproval rate:"
+msgstr "Антирейтинг:"

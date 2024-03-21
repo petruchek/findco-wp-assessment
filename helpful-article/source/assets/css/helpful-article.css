@@ -1,0 +1,88 @@
+.helpful-article-container {
+    border: 2px dashed violet;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.helpful-article-question,
+.helpful-article-answers,
+.helpful-article-answer {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.helpful-article-answers {
+    padding: 0 10px
+}
+
+.helpful-article-vote-yes,
+.helpful-article-vote-no {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 15px 5px 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    color: #808080;
+}
+
+.helpful-article-vote-yes:hover,
+.helpful-article-vote-no:hover {
+    background-color: #f0f0f0;
+}
+
+.helpful-article-vote-yes::before,
+.helpful-article-vote-no::before {
+    content: '';
+    margin: 5px;
+    color: rgba(0%, 0%, 0%, 0.5);
+}
+
+.helpful-article-vote-yes:hover::before,
+.helpful-article-vote-no:hover::before {
+    color: rgba(0%, 0%, 0%, 1.0);
+}
+
+.helpful-article-vote-yes::before {
+    content: '\1F60A';
+}
+
+.helpful-article-vote-no::before {
+    content: '\1F614';
+}
+
+.helpful-article-after-vote {display: none}
+
+.helpful-article-voted-yes,
+.helpful-article-voted-no {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 15px 5px 5px;
+    margin-right: 10px;
+    color: #808080;
+}
+
+.helpful-article-voted-active {
+    border-color: dodgerblue;
+    color: dodgerblue;
+}
+
+.helpful-article-voted-active::before {
+    color: rgba(0%, 0%, 0%, 1.0) !important;
+}
+
+.helpful-article-voted-yes::before,
+.helpful-article-voted-no::before {
+    content: '';
+    margin: 5px;
+    color: rgba(0%, 0%, 0%, 0.25);
+}
+
+.helpful-article-voted-yes::before {
+    content: '\1F60A';
+}
+
+.helpful-article-voted-no::before {
+    content: '\1F614';
+}
