@@ -19,7 +19,7 @@ class HelpfulArticle
 
         add_filter('the_content', [ $this, 'filterTheContent' ]);
 
-        register_activation_hook(__FILE__, [ $this, 'onActivation' ]);
+        register_activation_hook(plugin_dir_path(__FILE__) . 'helpful-article.php', [ $this, 'onActivation' ]);
 
         add_action('wp_ajax_' . self::AJAX_ACTION_NAME, [ $this, 'ajaxVote' ]);
         add_action('wp_ajax_nopriv_' . self::AJAX_ACTION_NAME, [ $this, 'ajaxVote' ]);
@@ -28,6 +28,9 @@ class HelpfulArticle
         add_action('init', [ $this, 'onInit' ]);
     }
 
+    /*
+     * Singleton implementation
+     */
     public static function getInstance(): ?HelpfulArticle
     {
         if (null === self::$instance) {
@@ -36,16 +39,25 @@ class HelpfulArticle
         return self::$instance;
     }
 
+    /*
+     * We use it to prevent automatic voting
+     */
     private function generateNonce($postID)
     {
         return wp_create_nonce('helpful_article_vote_nonce_' . $postID);
     }
 
+    /*
+     * The actual verification of the nonce validity
+     */
     private function verifyNonce($postID, $nonce): bool
     {
         return $nonce === $this->generateNonce($postID);
     }
 
+    /*
+     * Inject HTML into post contents. Also, enqueue stylesheet and javascript
+     */
     public function filterTheContent($content): string
     {
         global $post;
@@ -78,18 +90,24 @@ class HelpfulArticle
         return $content;
     }
 
+    /*
+     * AJAX handler for both logged-in and non-logged-in users
+     */
     public function ajaxVote()
     {
         $postID = intval($_POST['post_id'] ?? 0);
         $nonce = $_POST['nonce'] ?? '';
         $vote = intval($_POST['vote'] ?? 0);
+        //make sure the submission is not coming from a bot
         if (!$postID || !$nonce || !$this->verifyNonce($postID, $nonce)) {
             wp_send_json_error(__("Invalid parameters", 'helpful-article'), 400);
         }
+        //basic validation
         if (!in_array($vote, [0,1])) {
             wp_send_json_error(__("Invalid vote", 'helpful-article'), 400);
         }
 
+        //we will change some fields later
         $response = [
             'activate' => $vote,
             'message'  => __("You have already voted.", 'helpful-article'),
@@ -97,17 +115,21 @@ class HelpfulArticle
             'votes-0'  => 'N/A',
         ];
 
+        //fingerprint the user and check if he already voted
         $fp = $this->getUserFingerprint();
         $previousVote = $this->getPreviousVote($postID, $fp);
 
+        //only if this is a new vote - record it and re-calculate the article score
         if (!$previousVote) {
             $response['message'] = __("Thank you for your vote.", 'helpful-article');
             $this->recordVote($postID, $vote, $fp);
             $this->updatePostMeta($postID);
         }
 
+        //fetch article score
         $votes = $this->getPostMeta($postID);
 
+        //calculate the percentage
         if ($votes && $votes['total']) {
             $yays = round(100 * $votes['yays'] / $votes['total']);
             $response['votes-1'] = sprintf("%d%%", $yays);
@@ -117,11 +139,17 @@ class HelpfulArticle
         wp_send_json_success($response);
     }
 
+    /*
+     * For now only this, later we can do some browser fingerprinting
+     */
     private function getUserFingerprint()
     {
         return $_SERVER['REMOTE_ADDR'];
     }
 
+    /*
+     * Can be simplified to return bool, but returning the last vote allows to implement conditional multiple voting
+     */
     private function getPreviousVote(int $postID, string $fingerPrint)
     {
         $query = $this->wpdb->prepare("
@@ -134,12 +162,18 @@ class HelpfulArticle
         return $this->wpdb->get_row($query);
     }
 
+    /*
+     * Populate 1 row into our table
+     */
     private function recordVote(int $postID, int $vote, string $fingerPrint)
     {
-        $query = $this->wpdb->prepare("INSERT INTO $this->tableName (post_id, user_fp, vote) VALUES (%d, %s, %d)", $postID, $fingerPrint, $vote);
+        $query = $this->wpdb->prepare("INSERT IGNORE INTO $this->tableName (post_id, user_fp, vote) VALUES (%d, %s, %d)", $postID, $fingerPrint, $vote);
         return $this->wpdb->query($query);
     }
 
+    /*
+     * Fetch aggregative votes and store totals + yes votes
+     */
     private function updatePostMeta($postID)
     {
         $query = $this->wpdb->prepare("SELECT COUNT(*) as total,SUM(vote) as yays FROM {$this->tableName} WHERE post_id=%d", $postID);
@@ -147,16 +181,25 @@ class HelpfulArticle
         return update_post_meta($postID, self::META_FIELD, $value);
     }
 
+    /*
+     * Just a wrapper + default array
+     */
     private function getPostMeta(int $postID)
     {
         return get_post_meta($postID, self::META_FIELD, true) ?? [ 'total' => 0, 'yays' => 0 ];
     }
 
+    /*
+     * For i18n/l10n
+     */
     public function onInit(): void
     {
         load_plugin_textdomain('helpful-article', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
 
+    /*
+     * We need to remove UNIQUE KEY if we want to allow multiple votes from the same user
+     */
     public function onActivation(): void
     {
         $charsetCollate = $this->wpdb->get_charset_collate();
@@ -166,13 +209,17 @@ class HelpfulArticle
             post_id INT NOT NULL,
             user_fp VARCHAR(50) DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            vote TINYINT DEFAULT 0
+            vote TINYINT DEFAULT 0,
+            UNIQUE KEY post_user_unique (post_id, user_fp)
         ) $charsetCollate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($createTableStatement);
     }
 
+    /*
+     * Adding dashboard metabox
+     */
     public function addMetaboxes()
     {
         add_meta_box(
@@ -185,6 +232,9 @@ class HelpfulArticle
         );
     }
 
+    /*
+     * Displaying dashboard metabox
+     */
     public function metaboxCallback($post)
     {
         $votes = $this->getPostMeta($post->ID);

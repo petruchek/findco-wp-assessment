@@ -2,13 +2,21 @@
 
 I haven't specifically tested the plugin with PHP 7.4, but it should be compatible with version 7.4.
 
+### Installation
+- if you are using this repository - run `docker compose up`
+- if you have plugin files only - upload to your WordPress site and activate it (via wp cli or via dashboard). No extra steps required. You might need to add custom css rules depending on your theme. Add those CSS to your theme, not to the plugin. 
+
 ### Fingerprinting
 
 Currently, the plugin utilizes only the user's IP address for fingerprinting. However, implementing more advanced browser fingerprinting techniques could enhance security and make vote manipulation more challenging.
 
 ### Restrictions
 
-At present, each user (fingerprinted) is limited to a single vote. However, we store the timestamp of each vote, allowing for potential implementation of multiple votes with a cooldown period, such as 24 hours.
+At present, each user (fingerprinted) is limited to a single vote. However, we store the timestamp of each vote, allowing for potential implementation of multiple votes with a cooldown period, such as 24 hours. We need to remove UNIQUE index from the table.
+
+### Behavior
+
+I am not telling the user that he already voted before he tries to vote again. This can be changed if needed. Ideally, it belongs to the plugin settings page.
 
 ### Design
 
